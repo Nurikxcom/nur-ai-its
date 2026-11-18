@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUR MOTORS — Автомобили премиум-класса</title>
+    <!-- Подключение шрифта Inter и Montserrat для премиальной типографики -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Настройка кастомных цветов и шрифтов в Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: {
+                            950: '#07090E',
+                            900: '#0B0F19',
+                            800: '#131A2A',
+                            700: '#1E293B',
+                        },
+                        gold: {
+                            400: '#FBBF24',
+                            500: '#F59E0B',
+                            600: '#D97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Кастомные стили для скроллбара, ползунков и эффекта матового стекла */
+        body {
+            background-color: #07090E;
+            color: #F8FAFC;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(19, 26, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(25, 34, 54, 0.7) 0%, rgba(11, 15, 25, 0.85) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(245, 158, 11, 0.45);
+            box-shadow: 0 20px 40px -15px rgba(245, 158, 11, 0.15);
+        }
+        /* Стилизация ползунков input[type="range"] */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #1E293B;
+            border-radius: 5px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #F59E0B;
+            cursor: pointer;
+            border: 3px solid #07090E;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.7);
+            transition: transform 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        /* Анимация появления элементов при прокрутке */
+        .reveal {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: all 0.7s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Скрытие скроллбара для горизонтального меню фильтров на мобильных */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-amber-500 selection:text-black">
+
+    <!-- ==================== ШАПКА (HEADER) ==================== -->
+    <header class="fixed top-0 left-0 right-0 z-40 glass border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Логотип -->
+                <a href="#" class="flex items-center gap-2.5 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                        <svg class="w-6 h-6 text-dark-950" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-display font-black text-xl tracking-wider text-white">NUR <span class="text-amber-500">MOTORS</span></span>
+                        <span class="block text-[10px] uppercase tracking-[0.25em] text-slate-400 -mt-1">Luxury Auto</span>
+                    </div>
+                </a>
+
+                <!-- Навигация (Desktop) -->
+                <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+                    <a href="#catalog" class="hover:text-amber-400 transition-colors">Каталог</a>
+                    <a href="#calculator" class="hover:text-amber-400 transition-colors">Автокредит</a>
+                    <a href="#advantages" class="hover:text-amber-400 transition-colors">Преимущества</a>
+                    <a href="#contacts" class="hover:text-amber-400 transition-colors">Контакты</a>
+                </nav>
+
+                <!-- Кнопка «Подобрать авто» и бургер-меню -->
+                <div class="flex items-center gap-3">
+                    <button onclick="openLeadModal('Индивидуальный подбор авто')" class="px-4 py-2.5 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/25 transition-all active:scale-95">
+                        Подобрать авто
+                    </button>
+                    <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-xl bg-white/5 text-slate-300 hover:text-white border border-white/10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Выпадающее мобильное меню -->
+        <div id="mobileMenu" class="hidden md:hidden glass border-t border-white/10 px-4 pt-3 pb-6 space-y-2">
+            <a href="#catalog" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:bg-white/5 hover:text-amber-400">Каталог автомобилей</a>
+            <a href="#calculator" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:bg-white/5 hover:text-amber-400">Калькулятор кредита</a>
+            <a href="#advantages" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:bg-white/5 hover:text-amber-400">Почему выбирают нас</a>
+            <a href="#contacts" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:bg-white/5 hover:text-amber-400">Контакты и адрес</a>
+        </div>
+    </header>
+
+    <!-- ==================== ГЛАВНЫЙ ЭКРАН (HERO SECTION) ==================== -->
+    <section class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+        <!-- Фоновое изображение с затемнением и градиентами -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1614200187524-dc4b892acf16?auto=format&fit=crop&w=2000&q=80" 
+                 onerror="this.src='https://placehold.co/1920x1080/0B0F19/F59E0B?text=NUR+MOTORS+PREMIUM'"
+                 alt="Премиальный спорткар" 
+                 class="w-full h-full object-cover object-center scale-105 opacity-45">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/75 to-dark-950/60"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-dark-950 via-dark-950/80 to-transparent"></div>
+            <!-- Декоративное свечение -->
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-amber-500/20 rounded-full blur-[130px]"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="max-w-3xl">
+                <!-- Бейдж -->
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-amber-500/30 text-amber-400 text-xs sm:text-sm font-medium mb-6">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                    Новое поступление коллекции 2026 года
+                </div>
+
+                <!-- Главный заголовок -->
+                <h1 class="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.12] tracking-tight mb-6">
+                    Автомобили <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500">премиум-класса</span> с гарантией качества
+                </h1>
+
+                <!-- Подзаголовок -->
+                <p class="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-8 max-w-2xl">
+                    Эксклюзивные спорткары, статусные внедорожники и современные электромобили в наличии и под заказ. Полная юридическая прозрачность и техническая проверка по 150 пунктам.
+                </p>
+
+                <!-- Кнопки действий -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-12">
+                    <a href="#catalog" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-center text-base shadow-xl shadow-amber-500/25 transition-all hover:-translate-y-0.5">
+                        Смотреть каталог
+                    </a>
+                    <a href="#calculator" class="px-8 py-4 rounded-2xl glass hover:bg-white/10 text-white font-semibold text-center text-base border border-white/15 transition-all hover:-translate-y-0.5">
+                        Рассчитать кредит
+                    </a>
+                </div>
+
+                <!-- Мини-статистика -->
+                <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-6 border-t border-white/10 max-w-xl">
+                    <div>
+                        <div class="font-display font-extrabold text-2xl sm:text-3xl text-white">120+</div>
+                        <div class="text-xs sm:text-sm text-slate-400 mt-1">Авто в наличии</div>
+                    </div>
+                    <div>
+                        <div class="font-display font-extrabold text-2xl sm:text-3xl text-amber-400">100%</div>
+                        <div class="text-xs sm:text-sm text-slate-400 mt-1">Юридическая чистота</div>
+                    </div>
+                    <div>
+                        <div class="font-display font-extrabold text-2xl sm:text-3xl text-white">1 час</div>
+                        <div class="text-xs sm:text-sm text-slate-400 mt-1">Оформление сделки</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== КАТАЛОГ АВТОМОБИЛЕЙ ==================== -->
+    <section id="catalog" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Заголовок секции и фильтры -->
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6 reveal">
+                <div>
+                    <span class="text-amber-500 font-semibold text-sm uppercase tracking-widest">Актуальное наличие</span>
+                    <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white mt-2">Каталог автомобилей</h2>
+                </div>
+
+                <!-- Кнопки фильтрации -->
+                <div id="filterContainer" class="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
+                    <button data-filter="all" class="filter-btn active px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap bg-amber-500 text-dark-950 shadow-lg shadow-amber-500/20 transition-all">
+                        Все авто
+                    </button>
+                    <button data-filter="sedan" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap glass text-slate-300 hover:text-white transition-all">
+                        Седаны
+                    </button>
+                    <button data-filter="suv" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap glass text-slate-300 hover:text-white transition-all">
+                        Внедорожники
+                    </button>
+                    <button data-filter="sport" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap glass text-slate-300 hover:text-white transition-all">
+                        Спорткары
+                    </button>
+                    <button data-filter="electric" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap glass text-slate-300 hover:text-white transition-all">
+                        Электромобили
+                    </button>
+                </div>
+            </div>
+
+            <!-- Сетка карточек автомобилей (генерируется через JS) -->
+            <div id="carsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Карточки будут добавлены скриптом -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== КАЛЬКУЛЯТОР АВТОКРЕДИТА ==================== -->
+    <section id="calculator" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 lg:p-12 border border-white/10 reveal">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                    
+                    <!-- Левая часть: Ползунки настройки -->
+                    <div class="lg:col-span-7 space-y-7">
+                        <div>
+                            <span class="text-amber-500 font-semibold text-sm uppercase tracking-widest">Финансовые программы</span>
+                            <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white mt-2">Калькулятор автокредита</h2>
+                            <p class="text-slate-400 text-sm sm:text-base mt-2">Рассчитайте комфортный ежемесячный платеж. Одобрение по 2 документам за 30 минут.</p>
+                        </div>
+
+                        <!-- Ползунок 1: Стоимость автомобиля -->
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <label class="text-sm font-medium text-slate-300">Стоимость автомобиля</label>
+                                <span id="carPriceDisplay" class="font-display font-bold text-xl text-white">$120,000</span>
+                            </div>
+                            <input type="range" id="carPriceRange" min="30000" max="350000" step="5000" value="120000">
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>$30,000</span>
+                                <span>$350,000</span>
+                            </div>
+                        </div>
+
+                        <!-- Ползунок 2: Первоначальный взнос (%) -->
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <label class="text-sm font-medium text-slate-300">Первоначальный взнос</label>
+                                <div class="text-right">
+                                    <span id="downPaymentPercentDisplay" class="font-display font-bold text-xl text-amber-400">30%</span>
+                                    <span id="downPaymentAmountDisplay" class="text-sm text-slate-400 ml-1">($36,000)</span>
+                                </div>
+                            </div>
+                            <input type="range" id="downPaymentRange" min="10" max="80" step="5" value="30">
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>10%</span>
+                                <span>80%</span>
+                            </div>
+                        </div>
+
+                        <!-- Ползунок 3: Срок кредита (месяцы) -->
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <label class="text-sm font-medium text-slate-300">Срок кредитования</label>
+                                <span id="loanTermDisplay" class="font-display font-bold text-xl text-white">36 мес.</span>
+                            </div>
+                            <input type="range" id="loanTermRange" min="12" max="84" step="6" value="36">
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>12 мес. (1 год)</span>
+                                <span>84 мес. (7 лет)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Правая часть: Результат расчета -->
+                    <div class="lg:col-span-5">
+                        <div class="bg-dark-950/90 rounded-2xl p-6 sm:p-8 border border-amber-500/25 shadow-2xl relative overflow-hidden">
+                            <div class="absolute -right-12 -top-12 w-40 h-40 bg-amber-500/15 rounded-full blur-2xl"></div>
+                            
+                            <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Ваш ежемесячный платеж</span>
+                            <div id="monthlyPaymentDisplay" class="font-display font-black text-4xl sm:text-5xl text-amber-400 my-3">
+                                $2,670 <span class="text-lg font-normal text-slate-400">/ мес</span>
+                            </div>
+
+                            <div class="space-y-3 py-5 my-5 border-y border-white/10 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Сумма кредита:</span>
+                                    <span id="loanAmountDisplay" class="font-semibold text-white">$84,000</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Ставка программы:</span>
+                                    <span class="font-semibold text-emerald-400">от 8.9% годовых</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">КАСКО в подарок:</span>
+                                    <span class="font-semibold text-white">На 1-й год</span>
+                                </div>
+                            </div>
+
+                            <button onclick="openLeadModal('Заявка на автокредит')" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-base shadow-lg shadow-amber-500/20 transition-all active:scale-95">
+                                Подать заявку на кредит
+                            </button>
+                            <p class="text-[11px] text-slate-500 text-center mt-3">
+                                Расчет носит предварительный характер и не является публичной офертой.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ПОЧЕМУ ВЫБИРАЮТ НАС ==================== -->
+    <section id="advantages" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-14 reveal">
+                <span class="text-amber-500 font-semibold text-sm uppercase tracking-widest">Стандарты NUR MOTORS</span>
+                <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white mt-2">Почему выбирают нас</h2>
+                <p class="text-slate-400 text-sm sm:text-base mt-3">Мы превращаем покупку автомобиля в комфортный и безопасный процесс премиального уровня.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Карточка 1 -->
+                <div class="glass-card rounded-2xl p-6 reveal">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-white mb-2">Проверка по 150 пунктам</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Комплексная диагностика двигателя, КПП, электроники и ЛКП перед поступлением в шоурум.</p>
+                </div>
+
+                <!-- Карточка 2 -->
+                <div class="glass-card rounded-2xl p-6 reveal">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-white mb-2">Юридическая чистота</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Гарантия отсутствия залогов, ограничений и скрытой истории. Полный пакет документов для постановки на учет.</p>
+                </div>
+
+                <!-- Карточка 3 -->
+                <div class="glass-card rounded-2xl p-6 reveal">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-white mb-2">Trade-In за 1 час</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Обменяйте ваш текущий автомобиль на новый по справедливой рыночной оценке с дополнительной выгодой.</p>
+                </div>
+
+                <!-- Карточка 4 -->
+                <div class="glass-card rounded-2xl p-6 reveal">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-white mb-2">Доставка по всей стране</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Бережная транспортировка крытым автовозом с полным страхованием груза прямо до дверей вашего дома.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ФУТЕР (ПОДВАЛ) ==================== -->
+    <footer id="contacts" class="bg-dark-900 border-t border-white/10 pt-16 pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+                <!-- Бренд -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-dark-950" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <span class="font-display font-black text-xl tracking-wider text-white">NUR <span class="text-amber-500">MOTORS</span></span>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Автосалон премиальных и эксклюзивных автомобилей. Индивидуальный подход, честная история и безупречный сервис.
+                    </p>
+                </div>
+
+                <!-- Навигация -->
+                <div>
+                    <h4 class="font-display font-bold text-white mb-4">Навигация</h4>
+                    <ul class="space-y-2.5 text-sm text-slate-400">
+                        <li><a href="#catalog" class="hover:text-amber-400 transition-colors">Каталог автомобилей</a></li>
+                        <li><a href="#calculator" class="hover:text-amber-400 transition-colors">Кредитный калькулятор</a></li>
+                        <li><a href="#advantages" class="hover:text-amber-400 transition-colors">Преимущества салона</a></li>
+                        <li><button onclick="openLeadModal('Заявка на Trade-In')" class="hover:text-amber-400 transition-colors">Оценка авто в Trade-In</button></li>
+                    </ul>
+                </div>
+
+                <!-- Контакты -->
+                <div>
+                    <h4 class="font-display font-bold text-white mb-4">Контакты</h4>
+                    <ul class="space-y-3 text-sm text-slate-400">
+                        <li class="flex items-start gap-2.5">
+                            <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span>пр. Аль-Фараби, 77/8, Шоурум NUR MOTORS</span>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            <a href="tel:+77001234567" class="hover:text-white transition-colors">+7 (700) 123-45-67</a>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Ежедневно с 09:00 до 21:00</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Соцсети -->
+                <div>
+                    <h4 class="font-display font-bold text-white mb-4">Мы в соцсетях</h4>
+                    <p class="text-slate-400 text-sm mb-4">Следите за новыми поступлениями и обзорами в нашем Instagram и Telegram.</p>
+                    <div class="flex items-center gap-3">
+                        <a href="https://instagram.com/nur.it_official" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl glass hover:border-amber-500/50 text-sm font-medium text-white flex items-center gap-2 transition-all">
+                            <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            Instagram
+                        </a>
+                        <button onclick="openLeadModal('Консультация в WhatsApp / Telegram')" class="px-4 py-2.5 rounded-xl glass hover:border-amber-500/50 text-sm font-medium text-white transition-all">
+                            Telegram
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Копирайт и подпись студии -->
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-500">
+                <p>© 2026 NUR MOTORS. Все права защищены.</p>
+                <a href="https://instagram.com/nur.it_official" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-slate-400 hover:text-amber-400 transition-colors font-medium">
+                    <span>Разработано студией</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold tracking-wide">nur.it_official</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== МОДАЛЬНОЕ ОКНО: ПОДРОБНЕЕ ОБ АВТО ==================== -->
+    <div id="carDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="glass-card bg-dark-900 w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/15 shadow-2xl relative animate-fadeIn">
+            <!-- Кнопка закрытия -->
+            <button onclick="closeCarModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-dark-950/80 text-slate-300 hover:text-white flex items-center justify-center border border-white/10">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div id="carModalContent">
+                <!-- Контент подставляется динамически из JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== МОДАЛЬНОЕ ОКНО: БЫСТРАЯ ЗАЯВКА / ПОДБОР ==================== -->
+    <div id="leadModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="glass-card bg-dark-900 w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl relative">
+            <button onclick="closeLeadModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 text-slate-400 hover:text-white flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">NUR MOTORS VIP</span>
+            <h3 id="leadModalTitle" class="font-display font-bold text-2xl text-white mt-1 mb-2">Подобрать автомобиль</h3>
+            <p class="text-slate-400 text-sm mb-6">Оставьте ваши контакты — персональный менеджер свяжется с вами в течение 5 минут.</p>
+
+            <form onsubmit="handleFormSubmit(event, 'leadModal')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Ваше имя</label>
+                    <input type="text" required placeholder="Например, Александр" class="w-full px-4 py-3 rounded-xl bg-dark-950 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Номер телефона</label>
+                    <input type="tel" required placeholder="+7 (___) ___-__-__" class="w-full px-4 py-3 rounded-xl bg-dark-950 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Пожелания (необязательно)</label>
+                    <input type="text" placeholder="Марка, бюджет или удобное время звонка" class="w-full px-4 py-3 rounded-xl bg-dark-950 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm">
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all">
+                    Отправить заявку
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ (TOAST) ==================== -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="glass bg-dark-900 border border-emerald-500/40 rounded-2xl p-4 shadow-2xl flex items-center gap-3.5 max-w-sm">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <div>
+                <h4 class="font-bold text-white text-sm">Заявка успешно принята!</h4>
+                <p class="text-xs text-slate-300 mt-0.5">Менеджер NUR MOTORS уже готовит для вас предложение.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ЛОГИКА ==================== -->
+    <script>
+        // 1. БАЗА ДАННЫХ АВТОМОБИЛЕЙ
+        const carsData = [
+            {
+                id: 1,
+                name: "BMW M5 Competition",
+                category: "sedan",
+                categoryLabel: "Седан",
+                year: 2024,
+                mileage: "4 200 км",
+                engine: "4.4 л / 625 л.с.",
+                drive: "Полный (M xDrive)",
+                acceleration: "3.3 сек до 100 км/ч",
+                price: 128000,
+                badge: "Хит продаж",
+                image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1000&q=80",
+                description: "Легендарный бизнес-седан со спортивным характером. Карбоновая крыша, керамические тормоза, выхлопная система M Sport и акустика Bowers & Wilkins Diamond."
+            },
+            {
+                id: 2,
+                name: "Mercedes-Benz G63 AMG",
+                category: "suv",
+                categoryLabel: "Внедорожник",
+                year: 2025,
+                mileage: "Без пробега",
+                engine: "4.0 л V8 / 585 л.с.",
+                drive: "Полный (4MATIC)",
+                acceleration: "4.5 сек до 100 км/ч",
+                price: 245000,
+                badge: "Новый",
+                image: "https://images.unsplash.com/photo-1520031441872-265e4ff70366?auto=format&fit=crop&w=1000&q=80",
+                description: "Культовый внедорожник в исполнении AMG Night Package. Салон из кожи Nappa с ромбовидной прострочкой, кованые диски R22 и максимальный пакет ассистентов."
+            },
+            {
+                id: 3,
+                name: "Porsche 911 Carrera S",
+                category: "sport",
+                categoryLabel: "Спорткар",
+                year: 2024,
+                mileage: "1 850 км",
+                engine: "3.0 л / 450 л.с.",
+                drive: "Задний",
+                acceleration: "3.5 сек до 100 км/ч",
+                price: 169000,
+                badge: "Эксклюзив",
+                image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80",
+                description: "Эталон управляемости и драйва. Пакет Sport Chrono, спортивная подвеска PASM, матричные фары PDLS Plus и отделка салона карбоном и алькантарой."
+            },
+            {
+                id: 4,
+                name: "Tesla Model S Plaid",
+                category: "electric",
+                categoryLabel: "Электромобиль",
+                year: 2024,
+                mileage: "3 100 км",
+                engine: "Электро / 1020 л.с.",
+                drive: "Полный (Tri-Motor)",
+                acceleration: "2.1 сек до 100 км/ч",
+                price: 105000,
+                badge: "1020 л.с.",
+                image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1000&q=80",
+                description: "Один из самых быстрых серийных автомобилей в мире. Запас хода до 600 км, автопилот Full Self-Driving, штурвал Yoke и премиальная аудиосистема на 22 динамика."
+            },
+            {
+                id: 5,
+                name: "Toyota Land Cruiser 300 GR",
+                category: "suv",
+                categoryLabel: "Внедорожник",
+                year: 2025,
+                mileage: "Без пробега",
+                engine: "3.5 л Twin-Turbo / 415 л.с.",
+                drive: "Полный (4WD)",
+                acceleration: "6.7 сек до 100 км/ч",
+                price: 118000,
+                badge: "В наличии",
+                image: "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?auto=format&fit=crop&w=1000&q=80",
+                description: "Максимальная комплектация GR Sport. Блокировки всех дифференциалов, система E-KDSS, камеры кругового обзора 360°, вентиляция всех сидений и проекция на лобовое стекло."
+            },
+            {
+                id: 6,
+                name: "Audi RS6 Avant Performance",
+                category: "sedan",
+                categoryLabel: "Седан / Универсал",
+                year: 2024,
+                mileage: "6 500 км",
+                engine: "4.0 л V8 / 630 л.с.",
+                drive: "Полный (quattro)",
+                acceleration: "3.4 сек до 100 км/ч",
+                price: 149000,
+                badge: "Редкий экземпляр",
+                image: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1000&q=80",
+                description: "Безупречное сочетание практичности и суперкаровской динамики. Лазерная оптика HD Matrix, подруливающая задняя ось, пневмоподвеска RS и пакет внешней отделки карбон."
+            }
+        ];
+
+        // Форматирование цены в доллары ($120,000)
+        function formatPrice(num) {
+            return '$' + num.toLocaleString('en-US');
+        }
+
+        // 2. ОТРИСОВКА КАРТОЧЕК КАТАЛОГА
+        const carsGrid = document.getElementById('carsGrid');
+
+        function renderCars(filter = 'all') {
+            carsGrid.innerHTML = '';
+            const filteredCars = filter === 'all' 
+                ? carsData 
+                : carsData.filter(car => car.category === filter);
+
+            filteredCars.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-3xl overflow-hidden flex flex-col justify-between group';
+                card.innerHTML = `
+                    <div>
+                        <!-- Фото автомобиля -->
+                        <div class="relative h-56 sm:h-60 overflow-hidden bg-dark-800">
+                            <img src="${car.image}" 
+                                 onerror="this.src='https://placehold.co/800x500/131A2A/F59E0B?text=${encodeURIComponent(car.name)}'" 
+                                 alt="${car.name}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-dark-950/90 via-transparent to-transparent"></div>
+                            
+                            <!-- Бейдж -->
+                            <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-dark-950/80 backdrop-blur-md border border-amber-500/30 text-amber-400 text-xs font-semibold">
+                                ${car.badge}
+                            </span>
+                            <span class="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-lg bg-white/10 backdrop-blur-md text-white text-xs font-medium">
+                                ${car.year} г.
+                            </span>
+
+                            <!-- Цена поверх фото снизу -->
+                            <div class="absolute bottom-3.5 left-4 right-4 flex items-end justify-between">
+                                <span class="font-display font-black text-2xl text-white">${formatPrice(car.price)}</span>
+                                <span class="text-xs text-slate-300 bg-dark-950/70 px-2.5 py-1 rounded-lg">${car.categoryLabel}</span>
+                            </div>
+                        </div>
+
+                        <!-- Характеристики -->
+                        <div class="p-5 sm:p-6">
+                            <h3 class="font-display font-bold text-xl text-white group-hover:text-amber-400 transition-colors mb-4">
+                                ${car.name}
+                            </h3>
+
+                            <div class="grid grid-cols-2 gap-3 text-xs text-slate-300 bg-dark-950/60 p-3.5 rounded-2xl border border-white/5">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    <span class="text-slate-400">Пробег:</span>
+                                    <span class="font-semibold text-white truncate">${car.mileage}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    <span class="text-slate-400">Разгон:</span>
+                                    <span class="font-semibold text-white truncate">${car.acceleration.split(' ')[0]} сек</span>
+                                </div>
+                                <div class="col-span-2 flex items-center gap-2 pt-1 border-t border-white/5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    <span class="text-slate-400">Двигатель:</span>
+                                    <span class="font-semibold text-white">${car.engine}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки карточки -->
+                    <div class="px-5 pb-5 sm:px-6 sm:pb-6 grid grid-cols-2 gap-3">
+                        <button onclick="openCarModal(${car.id})" class="py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs sm:text-sm transition-all">
+                            Подробнее
+                        </button>
+                        <button onclick="openLeadModal('Бронирование: ${car.name}')" class="py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95">
+                            Забронировать
+                        </button>
+                    </div>
+                `;
+                carsGrid.appendChild(card);
+            });
+        }
+
+        // Логика кнопок фильтрации
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => {
+                    b.classList.remove('bg-amber-500', 'text-dark-950', 'shadow-lg', 'shadow-amber-500/20');
+                    b.classList.add('glass', 'text-slate-300');
+                });
+                btn.classList.remove('glass', 'text-slate-300');
+                btn.classList.add('bg-amber-500', 'text-dark-950', 'shadow-lg', 'shadow-amber-500/20');
+                
+                renderCars(btn.getAttribute('data-filter'));
+            });
+        });
+
+        // 3. МОДАЛЬНОЕ ОКНО ПОДРОБНЕЕ ОБ АВТО
+        const carDetailModal = document.getElementById('carDetailModal');
+        const carModalContent = document.getElementById('carModalContent');
+
+        function openCarModal(carId) {
+            const car = carsData.find(c => c.id === carId);
+            if (!car) return;
+
+            carModalContent.innerHTML = `
+                <div class="relative h-64 sm:h-80 w-full">
+                    <img src="${car.image}" onerror="this.src='https://placehold.co/800x500/131A2A/F59E0B?text=${encodeURIComponent(car.name)}'" alt="${car.name}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-dark-900/30 to-transparent"></div>
+                    <div class="absolute bottom-4 left-6 right-6">
+                        <span class="px-3 py-1 rounded-full bg-amber-500 text-dark-950 text-xs font-bold">${car.badge}</span>
+                        <h3 class="font-display font-black text-2xl sm:text-3xl text-white mt-2">${car.name}</h3>
+                    </div>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-white/10">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Стоимость автомобиля</span>
+                            <span class="font-display font-black text-3xl text-amber-400">${formatPrice(car.price)}</span>
+                        </div>
+                        <button onclick="selectCarInCalculator(${car.price})" class="px-4 py-2.5 rounded-xl glass hover:border-amber-500/50 text-xs sm:text-sm font-semibold text-amber-400 transition-all">
+                            Рассчитать в кредит →
+                        </button>
+                    </div>
+
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        ${car.description}
+                    </p>
+
+                    <!-- Сетка характеристик -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-dark-950 p-3.5 rounded-2xl border border-white/5">
+                            <span class="text-[11px] text-slate-400 block">Год выпуска</span>
+                            <span class="font-bold text-white text-sm mt-0.5 block">${car.year}</span>
+                        </div>
+                        <div class="bg-dark-950 p-3.5 rounded-2xl border border-white/5">
+                            <span class="text-[11px] text-slate-400 block">Пробег</span>
+                            <span class="font-bold text-white text-sm mt-0.5 block">${car.mileage}</span>
+                        </div>
+                        <div class="bg-dark-950 p-3.5 rounded-2xl border border-white/5">
+                            <span class="text-[11px] text-slate-400 block">Привод</span>
+                            <span class="font-bold text-white text-sm mt-0.5 block">${car.drive}</span>
+                        </div>
+                        <div class="bg-dark-950 p-3.5 rounded-2xl border border-white/5">
+                            <span class="text-[11px] text-slate-400 block">Динамика</span>
+                            <span class="font-bold text-white text-sm mt-0.5 block">${car.acceleration}</span>
+                        </div>
+                    </div>
+
+                    <!-- Форма записи на тест-драйв -->
+                    <form onsubmit="handleFormSubmit(event, 'carDetailModal')" class="bg-dark-950/80 p-5 rounded-2xl border border-amber-500/20 space-y-4">
+                        <h4 class="font-display font-bold text-white text-base">Записаться на тест-драйв или забронировать</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" required placeholder="Ваше имя" class="w-full px-4 py-3 rounded-xl bg-dark-900 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm">
+                            <input type="tel" required placeholder="+7 (___) ___-__-__" class="w-full px-4 py-3 rounded-xl bg-dark-900 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 text-sm">
+                        </div>
+                        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all">
+                            Забронировать ${car.name}
+                        </button>
+                    </form>
+                </div>
+            `;
+
+            carDetailModal.classList.remove('hidden');
+            carDetailModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCarModal() {
+            carDetailModal.classList.add('hidden');
+            carDetailModal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        // 4. МОДАЛЬНОЕ ОКНО БЫСТРОЙ ЗАЯВКИ
+        const leadModal = document.getElementById('leadModal');
+        const leadModalTitle = document.getElementById('leadModalTitle');
+
+        function openLeadModal(title = 'Подобрать автомобиль') {
+            leadModalTitle.textContent = title;
+            leadModal.classList.remove('hidden');
+            leadModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLeadModal() {
+            leadModal.classList.add('hidden');
+            leadModal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        // Закрытие модальных окон при клике на темный фон
+        window.addEventListener('click', (e) => {
+            if (e.target === carDetailModal) closeCarModal();
+            if (e.target === leadModal) closeLeadModal();
+        });
+
+        // 5. ОТПРАВКА ФОРМ И ПОКАЗ УВЕДОМЛЕНИЯ (TOAST)
+        function handleFormSubmit(event, modalId) {
+            event.preventDefault();
+            event.target.reset();
+            if (modalId === 'carDetailModal') closeCarModal();
+            if (modalId === 'leadModal') closeLeadModal();
+            showToast();
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toastNotification');
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 4000);
+        }
+
+        // 6. КАЛЬКУЛЯТОР АВТОКРЕДИТА
+        const carPriceRange = document.getElementById('carPriceRange');
+        const downPaymentRange = document.getElementById('downPaymentRange');
+        const loanTermRange = document.getElementById('loanTermRange');
+
+        function calculateLoan() {
+            const price = parseInt(carPriceRange.value);
+            const downPercent = parseInt(downPaymentRange.value);
+            const months = parseInt(loanTermRange.value);
+            const annualRate = 0.089; // 8.9% годовых
+
+            const downAmount = Math.round(price * (downPercent / 100));
+            const loanAmount = price - downAmount;
+            const monthlyRate = annualRate / 12;
+
+            // Формула аннуитетного платежа
+            const monthlyPayment = Math.round(
+                (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months))
+            );
+
+            document.getElementById('carPriceDisplay').textContent = formatPrice(price);
+            document.getElementById('downPaymentPercentDisplay').textContent = downPercent + '%';
+            document.getElementById('downPaymentAmountDisplay').textContent = `(${formatPrice(downAmount)})`;
+            document.getElementById('loanTermDisplay').textContent = `${months} мес.`;
+            document.getElementById('loanAmountDisplay').textContent = formatPrice(loanAmount);
+            document.getElementById('monthlyPaymentDisplay').innerHTML = `${formatPrice(monthlyPayment)} <span class="text-lg font-normal text-slate-400">/ мес</span>`;
+        }
+
+        // Подстановка цены авто из карточки прямо в калькулятор
+        function selectCarInCalculator(price) {
+            closeCarModal();
+            carPriceRange.value = Math.min(Math.max(price, 30000), 350000);
+            calculateLoan();
+            document.getElementById('calculator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        carPriceRange.addEventListener('input', calculateLoan);
+        downPaymentRange.addEventListener('input', calculateLoan);
+        loanTermRange.addEventListener('input', calculateLoan);
+
+        // 7. МОБИЛЬНОЕ МЕНЮ И АНИМАЦИИ ПРИ ПРОКРУТКЕ
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+
+        // Анимация появления блоков при скролле
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const elementTop = el.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 80) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+
+        // Инициализация при загрузке страницы
+        window.onload = function() {
+            renderCars('all');
+            calculateLoan();
+            revealOnScroll();
+        };
+    </script>
+</body>
+</html>
